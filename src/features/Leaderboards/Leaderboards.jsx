@@ -3,11 +3,13 @@ import { useMarketData } from '../../hooks/useMarketData';
 import { useAppStore } from '../../store/useAppStore';
 import { TrendingUp, TrendingDown, Activity } from 'lucide-react';
 import { clsx } from 'clsx';
+import { useTranslation } from 'react-i18next';
 
 const Leaderboards = () => {
   const [activeTab, setActiveTab] = useState('gainers');
   const { selectToken, timeframe } = useAppStore();
   const { data: marketData, isLoading } = useMarketData();
+  const { t } = useTranslation();
 
   const getSortedData = () => {
     if (!marketData) return [];
@@ -25,11 +27,11 @@ const Leaderboards = () => {
 
     switch (activeTab) {
       case 'gainers':
-        return data.sort((a, b) => getChange(b) - getChange(a)).slice(0, 5);
+        return data.sort((a, b) => getChange(b) - getChange(a));
       case 'losers':
-        return data.sort((a, b) => getChange(a) - getChange(b)).slice(0, 5);
+        return data.sort((a, b) => getChange(a) - getChange(b));
       case 'volume':
-        return data.sort((a, b) => b.total_volume - a.total_volume).slice(0, 5);
+        return data.sort((a, b) => b.total_volume - a.total_volume);
       default:
         return data;
     }
@@ -64,14 +66,14 @@ const Leaderboards = () => {
   return (
     <div className="w-64 bg-gray-950 border-l border-gray-800 flex flex-col h-full">
       <div className="flex border-b border-gray-800">
-        <TabButton id="gainers" label="Gainers" icon={TrendingUp} />
-        <TabButton id="losers" label="Losers" icon={TrendingDown} />
-        <TabButton id="volume" label="Volume" icon={Activity} />
+        <TabButton id="gainers" label={t('leaderboard.gainers')} icon={TrendingUp} />
+        <TabButton id="losers" label={t('leaderboard.losers')} icon={TrendingDown} />
+        <TabButton id="volume" label={t('leaderboard.volume')} icon={Activity} />
       </div>
 
       <div className="flex-1 overflow-y-auto p-2 space-y-1">
         {isLoading ? (
-          <div className="flex items-center justify-center h-20 text-gray-500 text-xs">Loading...</div>
+          <div className="flex items-center justify-center h-20 text-gray-500 text-xs">{t('app.loading')}</div>
         ) : (
           items.map((item, index) => {
             const change = getChangeValue(item);

@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useAppStore } from '../../store/useAppStore';
-import { useCoinDetails, useCoinMarketChart } from '../../hooks/useMarketData';
+import { useCoinDetails, useCoinMarketChart, useMarketData } from '../../hooks/useMarketData';
 import { getCoinCategory } from '../../lib/utils';
 import { X, ExternalLink, Copy, Globe, Twitter, MessageCircle, FileText, Activity, Layers, BarChart2, Users, Wallet, TrendingUp, ArrowRightLeft, Fish } from 'lucide-react';
 import { createChart, ColorType, LineSeries } from 'lightweight-charts';
 import { clsx } from 'clsx';
+import { useTranslation } from 'react-i18next';
 
 const TokenDetailPanel = () => {
   const { selectedTokenId, isDetailPanelOpen, closeDetailPanel } = useAppStore();
@@ -12,9 +13,11 @@ const TokenDetailPanel = () => {
   const chartRef = useRef(null);
   const [chartDays, setChartDays] = useState(1);
   const [activeTab, setActiveTab] = useState('market'); // 'market', 'onchain', 'about'
+  const { t } = useTranslation();
 
   const { data: tokenDetails, isLoading: isDetailsLoading } = useCoinDetails(selectedTokenId);
   const { data: marketChart, isLoading: isChartLoading } = useCoinMarketChart(selectedTokenId, chartDays);
+  const { data: allMarketData } = useMarketData();
 
   useEffect(() => {
     if (!isDetailPanelOpen || !marketChart || !chartContainerRef.current || activeTab !== 'market') return;
@@ -137,18 +140,22 @@ const TokenDetailPanel = () => {
     </button>
   );
 
-  const StatCard = ({ title, value, change, icon: Icon, color = "blue" }) => (
-    <div className="bg-gray-800/30 p-4 rounded-lg border border-gray-800">
-      <div className="flex justify-between items-start mb-2">
-        <div>
-          <div className="text-xs text-gray-500 mb-1">{title}</div>
-          <div className="text-lg font-bold text-white">{value}</div>
-          {change && <div className={`text-xs ${change.startsWith('+') ? 'text-green-500' : 'text-red-500'}`}>{change}</div>}
+  const StatCard = ({ title, value, change, icon: Icon, color = "blue" }) => {
+    if (value === 'N/A' || value === null || value === undefined) return null;
+    
+    return (
+      <div className="bg-gray-800/30 p-4 rounded-lg border border-gray-800">
+        <div className="flex justify-between items-start mb-2">
+          <div>
+            <div className="text-xs text-gray-500 mb-1">{title}</div>
+            <div className="text-lg font-bold text-white">{value}</div>
+            {change && <div className={`text-xs ${change.startsWith('+') ? 'text-green-500' : 'text-red-500'}`}>{change}</div>}
+          </div>
+          {Icon && <Icon size={16} className={`text-${color}-400`} />}
         </div>
-        {Icon && <Icon size={16} className={`text-${color}-400`} />}
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="fixed inset-y-0 right-0 w-96 bg-gray-900 border-l border-gray-800 shadow-2xl transform transition-transform duration-300 ease-in-out z-50 overflow-y-auto flex flex-col">
@@ -193,9 +200,9 @@ const TokenDetailPanel = () => {
 
       {/* Tabs */}
       <div className="flex border-b border-gray-800 px-6">
-        <TabButton id="market" label="Market" icon={BarChart2} />
-        <TabButton id="onchain" label="On-Chain" icon={Activity} />
-        <TabButton id="about" label="About" icon={FileText} />
+        <TabButton id="market" label={t('detail_panel.market')} icon={BarChart2} />
+        <TabButton id="onchain" label={t('detail_panel.onchain')} icon={Activity} />
+        <TabButton id="about" label={t('detail_panel.about')} icon={FileText} />
       </div>
 
       {/* Content Area */}
@@ -214,12 +221,12 @@ const TokenDetailPanel = () => {
               <div className="h-[200px] w-full bg-gray-950 rounded-lg border border-gray-800 overflow-hidden relative" ref={chartContainerRef}>
                 {isChartLoading && (
                   <div className="absolute inset-0 flex items-center justify-center text-gray-500 text-xs bg-gray-950/80 z-10">
-                    Loading Chart...
+                    {t('detail_panel.loading_chart')}
                   </div>
                 )}
                 {!isChartLoading && (!marketChart?.prices || marketChart.prices.length === 0) && (
                    <div className="absolute inset-0 flex items-center justify-center text-gray-500 text-xs">
-                     No chart data available
+                     {t('detail_panel.no_chart_data')}
                    </div>
                 )}
               </div>
@@ -228,19 +235,19 @@ const TokenDetailPanel = () => {
             {/* Key Stats */}
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-gray-800/50 p-3 rounded-lg">
-                <div className="text-xs text-gray-400 mb-1">Market Cap</div>
+                <div className="text-xs text-gray-400 mb-1">{t('detail_panel.market_cap')}</div>
                 <div className="text-sm font-medium text-white">{formatNumber(tokenDetails?.market_data?.market_cap?.usd)}</div>
               </div>
               <div className="bg-gray-800/50 p-3 rounded-lg">
-                <div className="text-xs text-gray-400 mb-1">Volume (24h)</div>
+                <div className="text-xs text-gray-400 mb-1">{t('detail_panel.volume_24h')}</div>
                 <div className="text-sm font-medium text-white">{formatNumber(tokenDetails?.market_data?.total_volume?.usd)}</div>
               </div>
               <div className="bg-gray-800/50 p-3 rounded-lg">
-                <div className="text-xs text-gray-400 mb-1">FDV</div>
+                <div className="text-xs text-gray-400 mb-1">{t('detail_panel.fdv')}</div>
                 <div className="text-sm font-medium text-white">{formatNumber(tokenDetails?.market_data?.fdv)}</div>
               </div>
               <div className="bg-gray-800/50 p-3 rounded-lg">
-                <div className="text-xs text-gray-400 mb-1">Circulating Supply</div>
+                <div className="text-xs text-gray-400 mb-1">{t('detail_panel.circulating_supply')}</div>
                 <div className="text-sm font-medium text-white">{formatSupply(tokenDetails?.market_data?.circulating_supply)}</div>
               </div>
             </div>
@@ -253,42 +260,85 @@ const TokenDetailPanel = () => {
             {/* Network Health (L1/L2) */}
             {(isL1 || !isDeFi) && (
               <div>
-                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Network Health</h3>
+                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">{t('detail_panel.network_health')}</h3>
                 <div className="grid grid-cols-1 gap-4">
-                  <StatCard title="Daily Active Addresses" value="N/A" change="" icon={Users} color="blue" />
-                  <StatCard title="Daily Transactions" value="N/A" change="" icon={Activity} color="purple" />
+                  <StatCard
+                    title={t('detail_panel.daily_active_addresses')}
+                    value={tokenDetails?.market_data?.dau ? formatNumber(tokenDetails.market_data.dau) : null}
+                    change=""
+                    icon={Users}
+                    color="blue"
+                  />
+                  <StatCard
+                    title={t('detail_panel.daily_transactions')}
+                    value={tokenDetails?.market_data?.txns_24h ? formatSupply(tokenDetails.market_data.txns_24h) : null}
+                    change=""
+                    icon={Activity}
+                    color="purple"
+                  />
+                  {tokenDetails?.market_data?.block_time && (
+                    <StatCard
+                      title={t('detail_panel.block_time')}
+                      value={`${tokenDetails.market_data.block_time}s`}
+                      change=""
+                      icon={Layers}
+                      color="indigo"
+                    />
+                  )}
+                  {tokenDetails?.market_data?.net_hashes && (
+                    <StatCard
+                      title={t('detail_panel.hashrate')}
+                      value={`${formatNumber(tokenDetails.market_data.net_hashes)} H/s`}
+                      change=""
+                      icon={Activity}
+                      color="orange"
+                    />
+                  )}
                 </div>
+                {/* Fallback message if no data */}
+                {!tokenDetails?.market_data?.dau && !tokenDetails?.market_data?.txns_24h && !tokenDetails?.market_data?.block_time && !tokenDetails?.market_data?.net_hashes && (
+                  <div className="text-xs text-gray-500 italic">{t('detail_panel.no_network_data')}</div>
+                )}
               </div>
             )}
 
             {/* Financials (DeFi/L1) */}
             <div>
-              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 mt-2">Financials</h3>
+              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 mt-2">{t('detail_panel.financials')}</h3>
               <div className="grid grid-cols-1 gap-4">
-                <StatCard 
-                  title="Total Value Locked (TVL)" 
-                  value={tokenDetails?.market_data?.tvl ? formatNumber(tokenDetails.market_data.tvl) : 'N/A'} 
-                  change="" 
-                  icon={Wallet} 
-                  color="green" 
+                <StatCard
+                  title={t('detail_panel.tvl')}
+                  value={tokenDetails?.market_data?.tvl ? formatNumber(tokenDetails.market_data.tvl) : null}
+                  change=""
+                  icon={Wallet}
+                  color="green"
                 />
-                {isDeFi && (
-                  <StatCard title="Protocol Revenue (24h)" value="N/A" change="" icon={BarChart2} color="yellow" />
-                )}
+                <StatCard
+                  title={t('detail_panel.protocol_revenue')}
+                  value={tokenDetails?.market_data?.revenue ? formatNumber(tokenDetails.market_data.revenue) : null}
+                  change=""
+                  icon={BarChart2}
+                  color="yellow"
+                />
               </div>
+               {/* Fallback message if no data */}
+               {!tokenDetails?.market_data?.tvl && !tokenDetails?.market_data?.revenue && (
+                  <div className="text-xs text-gray-500 italic">{t('detail_panel.no_financial_data')}</div>
+                )}
             </div>
 
             {/* Holder Analytics (All) */}
             <div>
-              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 mt-2">Holder Analytics</h3>
+              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 mt-2">{t('detail_panel.holder_analytics')}</h3>
               <div className="grid grid-cols-1 gap-4">
-                <StatCard title="Exchange Net Flow (24h)" value="N/A" change="" icon={ArrowRightLeft} color="red" />
-                <StatCard title="Whale Transactions (>100k)" value="N/A" change="" icon={Fish} color="indigo" />
+                <StatCard title={t('detail_panel.exchange_net_flow')} value={null} change="" icon={ArrowRightLeft} color="red" />
+                <StatCard title={t('detail_panel.whale_transactions')} value={null} change="" icon={Fish} color="indigo" />
               </div>
+               <div className="text-xs text-gray-500 italic">{t('detail_panel.holder_analytics_soon')}</div>
             </div>
             
             <div className="text-xs text-gray-600 text-center mt-4">
-              Data Source: DefiLlama & CryptoCompare
+              {t('detail_panel.data_source')}: {tokenDetails?.data_sources?.join(', ') || 'CryptoCompare'}
             </div>
           </div>
         )}
@@ -297,42 +347,42 @@ const TokenDetailPanel = () => {
         {activeTab === 'about' && (
           <div className="space-y-6">
             <div className="bg-gray-800/30 p-4 rounded-lg border border-gray-800">
-              <h3 className="text-sm font-bold text-white mb-2">About {tokenDetails?.name}</h3>
+              <h3 className="text-sm font-bold text-white mb-2">{t('detail_panel.about')} {tokenDetails?.name}</h3>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <div className="text-xs text-gray-500 mb-1">Rank</div>
-                  <div className="text-white">#{tokenDetails?.market_cap_rank || 'N/A'}</div>
+                  <div className="text-xs text-gray-500 mb-1">{t('detail_panel.rank')}</div>
+                  <div className="text-white">#{tokenDetails?.market_cap_rank || allMarketData?.find(c => c.symbol?.toLowerCase() === tokenDetails?.symbol?.toLowerCase())?.market_cap_rank || 'N/A'}</div>
                 </div>
                 <div>
-                  <div className="text-xs text-gray-500 mb-1">Sector</div>
+                  <div className="text-xs text-gray-500 mb-1">{t('detail_panel.sector')}</div>
                   <div className="text-white">{category}</div>
                 </div>
               </div>
             </div>
 
             <div>
-              <h3 className="text-sm font-bold text-white mb-3">Links</h3>
+              <h3 className="text-sm font-bold text-white mb-3">{t('detail_panel.links')}</h3>
               <div className="space-y-2">
                 {tokenDetails?.links?.homepage?.[0] && (
                   <a href={tokenDetails.links.homepage[0]} target="_blank" rel="noreferrer" className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg hover:bg-gray-800 transition-colors">
-                    <span className="flex items-center text-gray-300"><Globe size={16} className="mr-2" /> Website</span>
+                    <span className="flex items-center text-gray-300"><Globe size={16} className="mr-2" /> {t('detail_panel.website')}</span>
                     <ExternalLink size={14} className="text-gray-500" />
                   </a>
                 )}
                 {tokenDetails?.links?.twitter_screen_name && (
                   <a href={`https://twitter.com/${tokenDetails.links.twitter_screen_name}`} target="_blank" rel="noreferrer" className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg hover:bg-gray-800 transition-colors">
-                    <span className="flex items-center text-gray-300"><Twitter size={16} className="mr-2" /> Twitter</span>
+                    <span className="flex items-center text-gray-300"><Twitter size={16} className="mr-2" /> {t('detail_panel.twitter')}</span>
                     <ExternalLink size={14} className="text-gray-500" />
                   </a>
                 )}
                 {tokenDetails?.links?.whitepaper && (
                   <a href={tokenDetails.links.whitepaper} target="_blank" rel="noreferrer" className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg hover:bg-gray-800 transition-colors">
-                    <span className="flex items-center text-gray-300"><FileText size={16} className="mr-2" /> Whitepaper</span>
+                    <span className="flex items-center text-gray-300"><FileText size={16} className="mr-2" /> {t('detail_panel.whitepaper')}</span>
                     <ExternalLink size={14} className="text-gray-500" />
                   </a>
                 )}
                 <a href={`https://www.coingecko.com/en/coins/${tokenDetails?.id}`} target="_blank" rel="noreferrer" className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg hover:bg-gray-800 transition-colors">
-                  <span className="flex items-center text-gray-300"><img src="https://static.coingecko.com/s/thumbnail-d5a7c1de76b4bc1332e4f897dc1fa183.png" className="w-4 h-4 mr-2 grayscale opacity-70" /> CoinGecko</span>
+                  <span className="flex items-center text-gray-300"><img src="https://static.coingecko.com/s/thumbnail-d5a7c1de76b4bc1332e4f897dc1fa183.png" className="w-4 h-4 mr-2 grayscale opacity-70" /> {t('detail_panel.coingecko')}</span>
                   <ExternalLink size={14} className="text-gray-500" />
                 </a>
               </div>
@@ -341,7 +391,7 @@ const TokenDetailPanel = () => {
             {/* Contract Address */}
             {tokenDetails?.platforms?.ethereum && (
               <div>
-                <h3 className="text-sm font-bold text-white mb-2">Contract</h3>
+                <h3 className="text-sm font-bold text-white mb-2">{t('detail_panel.contract')}</h3>
                 <div className="bg-gray-950 p-3 rounded-lg border border-gray-800 flex items-center justify-between">
                   <div className="truncate text-xs text-gray-400 font-mono mr-2">
                     {tokenDetails.platforms.ethereum}

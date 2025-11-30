@@ -4,14 +4,17 @@ import TreemapNode from './TreemapNode';
 import { useMarketData } from '../../hooks/useMarketData';
 import { getCoinCategory, getCoinEcosystems } from '../../lib/utils';
 import { useAppStore } from '../../store/useAppStore';
-import { ChevronRight, Home } from 'lucide-react';
+import { ChevronRight, Home, Grid, Layers } from 'lucide-react';
+import { clsx } from 'clsx';
+import { useTranslation } from 'react-i18next';
 
 const TreemapContainer = () => {
   const containerRef = useRef(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-  const { ecosystemFilter, viewMode, selectedSector, enterSector, goBackToSectors } = useAppStore();
+  const { ecosystemFilter, viewMode, selectedSector, enterSector, goBackToSectors, enterEcosystemView, selectToken } = useAppStore();
   const [tooltip, setTooltip] = useState(null);
   const hoverTimeoutRef = useRef(null);
+  const { t } = useTranslation();
   
   const { data: marketData, isLoading, error } = useMarketData();
 
@@ -89,12 +92,10 @@ const TreemapContainer = () => {
   const handleNodeMouseEnter = (e, data) => {
     if (!data) return;
     
-    // Clear any existing timeout
     if (hoverTimeoutRef.current) {
       clearTimeout(hoverTimeoutRef.current);
     }
 
-    // Set new timeout for 200ms delay
     hoverTimeoutRef.current = setTimeout(() => {
       const rect = containerRef.current.getBoundingClientRect();
       setTooltip({
@@ -123,23 +124,62 @@ const TreemapContainer = () => {
     }
   };
 
+  // Group By Switcher Component
+  const GroupBySwitcher = () => (
+    <div className="flex bg-gray-800 rounded-lg p-0.5 ml-4">
+      <button
+        onClick={() => enterEcosystemView()} // Switch to 'token' view (Coins)
+        className={clsx(
+          "flex items-center px-3 py-1 text-xs font-medium rounded-md transition-all",
+          viewMode === 'token' && !selectedSector // Active if token view and no specific sector selected (root token view)
+            ? "bg-gray-700 text-white shadow-sm"
+            : "text-gray-400 hover:text-gray-200"
+        )}
+      >
+        <Grid size={12} className="mr-1.5" />
+        {t('treemap.coins')}
+      </button>
+      <button
+        onClick={() => goBackToSectors()} // Switch to 'sector' view
+        className={clsx(
+          "flex items-center px-3 py-1 text-xs font-medium rounded-md transition-all",
+          viewMode === 'sector'
+            ? "bg-gray-700 text-white shadow-sm"
+            : "text-gray-400 hover:text-gray-200"
+        )}
+      >
+        <Layers size={12} className="mr-1.5" />
+        {t('treemap.sectors')}
+      </button>
+    </div>
+  );
+
   return (
     <div className="w-full h-full flex flex-col bg-gray-950 rounded-lg overflow-hidden border border-gray-800">
-      {/* Breadcrumbs */}
-      <div className="flex items-center px-4 py-2 bg-gray-900 border-b border-gray-800 text-sm">
-        <button 
-          onClick={goBackToSectors}
-          className={`flex items-center hover:text-white transition-colors ${viewMode === 'sector' ? 'text-white font-bold' : 'text-gray-400'}`}
-        >
-          <Home size={14} className="mr-1" />
-          All Sectors
-        </button>
-        {viewMode === 'token' && selectedSector && (
-          <>
-            <ChevronRight size={14} className="mx-2 text-gray-600" />
-            <span className="text-white font-bold">{selectedSector}</span>
-          </>
-        )}
+      {/* Header / Breadcrumbs */}
+      <div className="flex items-center justify-between px-4 py-2 bg-gray-900 border-b border-gray-800 text-sm h-12">
+        <div className="flex items-center">
+          {/* If we are drilled down into a sector, show breadcrumbs */}
+          {viewMode === 'token' && selectedSector ? (
+            <>
+              <button 
+                onClick={goBackToSectors}
+                className="flex items-center text-gray-400 hover:text-white transition-colors"
+              >
+                <Home size={14} className="mr-1" />
+                {t('treemap.all_sectors')}
+              </button>
+              <ChevronRight size={14} className="mx-2 text-gray-600" />
+              <span className="text-white font-bold">{selectedSector}</span>
+            </>
+          ) : (
+            /* If at root level (Coins or Sectors), show Switcher */
+            <div className="flex items-center">
+              <span className="text-gray-400 mr-2">{t('treemap.group_by')}</span>
+              <GroupBySwitcher />
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Treemap Area */}
@@ -150,19 +190,19 @@ const TreemapContainer = () => {
       >
         {isLoading && (
           <div className="absolute inset-0 flex items-center justify-center z-20 bg-gray-950/80">
-            <div className="text-blue-500 animate-pulse">Loading Market Data...</div>
+            <div className="text-blue-500 animate-pulse">{t('app.loading')}</div>
           </div>
         )}
 
         {error && (
           <div className="absolute inset-0 flex items-center justify-center z-20 bg-gray-950">
-            <div className="text-red-500">Error loading data. Please try again later.</div>
+            <div className="text-red-500">{t('app.error')}</div>
           </div>
         )}
 
         {!isLoading && !error && (!processedData || processedData.length === 0) && (
           <div className="absolute inset-0 flex items-center justify-center z-20 bg-gray-950">
-            <div className="text-gray-500">No market data available for this filter.</div>
+            <div className="text-gray-500">{t('app.no_data')}</div>
           </div>
         )}
 
@@ -177,6 +217,8 @@ const TreemapContainer = () => {
               onClick={() => {
                 if (viewMode === 'sector') {
                   enterSector(leafNode.data.name);
+                } else {
+                  selectToken(leafNode.data.id);
                 }
               }}
               onMouseEnter={(e, data) => handleNodeMouseEnter(e, data)}
@@ -187,7 +229,7 @@ const TreemapContainer = () => {
         
         {!isLoading && !error && (!root || !root.children || root.children.length === 0) && (
           <div className="absolute inset-0 flex items-center justify-center text-gray-500 pointer-events-none">
-            {dimensions.width === 0 ? `Initializing... (${dimensions.width}x${dimensions.height})` : 'No data to display'}
+            {dimensions.width === 0 ? t('app.initializing') : t('app.no_data_display')}
           </div>
         )}
 
@@ -222,7 +264,7 @@ const TreemapContainer = () => {
                 {tooltip.data.market_cap ? `$${(tooltip.data.market_cap / 1e9).toFixed(2)}B` : 'N/A'}
               </span>
             </div>
-            {/* Sparkline Placeholder (Visual only for MVP) */}
+            {/* Sparkline Placeholder */}
             <div className="mt-2 h-8 w-full flex items-end space-x-0.5 opacity-50">
                {Array.from({ length: 20 }).map((_, i) => (
                  <div 

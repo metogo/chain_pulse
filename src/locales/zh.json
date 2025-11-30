@@ -1,0 +1,65 @@
+{
+  "app": {
+    "title": "Chain Pulse",
+    "loading": "正在加载市场数据...",
+    "error": "加载数据失败，请稍后重试。",
+    "no_data": "当前筛选条件下无市场数据。",
+    "initializing": "初始化中...",
+    "no_data_display": "暂无数据展示"
+  },
+  "control_panel": {
+    "timeframe": "时间周期",
+    "size_by": "面积依据",
+    "ecosystem": "生态系统",
+    "updated": "数据更新：实时",
+    "source": "数据源：CryptoCompare"
+  },
+  "treemap": {
+    "group_by": "分组依据：",
+    "coins": "代币",
+    "sectors": "赛道",
+    "all_sectors": "所有赛道"
+  },
+  "leaderboard": {
+    "gainers": "涨幅榜",
+    "losers": "跌幅榜",
+    "volume": "成交量"
+  },
+  "detail_panel": {
+    "market": "市场",
+    "onchain": "链上",
+    "about": "关于",
+    "market_cap": "市值",
+    "volume_24h": "24小时成交量",
+    "fdv": "完全稀释估值",
+    "circulating_supply": "流通供应量",
+    "rank": "排名",
+    "sector": "赛道",
+    "network_health": "网络健康",
+    "financials": "财务状况",
+    "holder_analytics": "持仓分析",
+    "daily_active_addresses": "日活跃地址",
+    "daily_transactions": "日交易笔数",
+    "block_time": "出块时间",
+    "hashrate": "全网算力",
+    "tvl": "总锁仓量 (TVL)",
+    "protocol_revenue": "协议收入 (24h)",
+    "exchange_net_flow": "交易所净流量 (24h)",
+    "whale_transactions": "巨鲸交易 (>100k)",
+    "links": "链接",
+    "website": "官网",
+    "twitter": "推特",
+    "whitepaper": "白皮书",
+    "coingecko": "CoinGecko",
+    "contract": "合约地址",
+    "no_chart_data": "暂无图表数据",
+    "loading_chart": "图表加载中...",
+    "no_network_data": "该资产暂无网络健康数据。",
+    "no_financial_data": "该资产暂无财务数据。",
+    "holder_analytics_soon": "持仓分析功能即将上线。",
+    "data_source": "数据源：DefiLlama, Blockchair & CryptoCompare"
+  },
+  "global_bar": {
+    "sentiment": "市场情绪"
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "app": {
+    "title": "Chain Pulse",
+    "loading": "Loading Market Data...",
+    "error": "Error loading data. Please try again later.",
+    "no_data": "No market data available for this filter.",
+    "initializing": "Initializing...",
+    "no_data_display": "No data to display"
+  },
+  "control_panel": {
+    "timeframe": "Timeframe",
+    "size_by": "Size By",
+    "ecosystem": "Ecosystem",
+    "updated": "Data updated: Live",
+    "source": "Source: CryptoCompare"
+  },
+  "treemap": {
+    "group_by": "Group By:",
+    "coins": "Coins",
+    "sectors": "Sectors",
+    "all_sectors": "All Sectors"
+  },
+  "leaderboard": {
+    "gainers": "Gainers",
+    "losers": "Losers",
+    "volume": "Volume"
+  },
+  "detail_panel": {
+    "market": "Market",
+    "onchain": "On-Chain",
+    "about": "About",
+    "market_cap": "Market Cap",
+    "volume_24h": "Volume (24h)",
+    "fdv": "FDV",
+    "circulating_supply": "Circulating Supply",
+    "rank": "Rank",
+    "sector": "Sector",
+    "network_health": "Network Health",
+    "financials": "Financials",
+    "holder_analytics": "Holder Analytics",
+    "daily_active_addresses": "Daily Active Addresses",
+    "daily_transactions": "Daily Transactions",
+    "block_time": "Block Time",
+    "hashrate": "Hashrate",
+    "tvl": "Total Value Locked (TVL)",
+    "protocol_revenue": "Protocol Revenue (24h)",
+    "exchange_net_flow": "Exchange Net Flow (24h)",
+    "whale_transactions": "Whale Transactions (>100k)",
+    "links": "Links",
+    "website": "Website",
+    "twitter": "Twitter",
+    "whitepaper": "Whitepaper",
+    "coingecko": "CoinGecko",
+    "contract": "Contract",
+    "no_chart_data": "No chart data available",
+    "loading_chart": "Loading Chart...",
+    "no_network_data": "No network health data available for this asset.",
+    "no_financial_data": "No financial data available for this asset.",
+    "holder_analytics_soon": "Holder analytics coming soon.",
+    "data_source": "Data Source: DefiLlama, Blockchair & CryptoCompare"
+  },
+  "global_bar": {
+    "sentiment": "Sentiment"
+  }
+}

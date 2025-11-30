@@ -7,7 +7,7 @@ export const useAppStore = create((set) => ({
   ecosystemFilter: 'all', // 'all', 'ethereum', 'solana', etc.
   
   // Drill-Down State
-  viewMode: 'sector', // 'sector' (L1) or 'token' (L2)
+  viewMode: 'token', // 'sector' (L1) or 'token' (L2) - Default to 'token' (Coins)
   selectedSector: null, // e.g., 'Layer 1', 'DeFi'
 
   // Detail Panel State

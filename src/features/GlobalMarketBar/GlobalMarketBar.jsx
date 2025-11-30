@@ -1,12 +1,19 @@
 import React from 'react';
 import { useGlobalData } from '../../hooks/useMarketData';
-import { TrendingUp, TrendingDown, Activity, Zap } from 'lucide-react';
+import { TrendingUp, TrendingDown, Activity, Zap, Globe } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const GlobalMarketBar = () => {
   const { data: globalData, isLoading, error } = useGlobalData();
+  const { t, i18n } = useTranslation();
+
+  const toggleLanguage = () => {
+    const newLang = i18n.language === 'en' ? 'zh' : 'en';
+    i18n.changeLanguage(newLang);
+  };
 
   if (isLoading) return <div className="w-full h-10 bg-gray-900 border-b border-gray-800 animate-pulse"></div>;
-  if (error) return <div className="w-full h-10 bg-gray-900 border-b border-gray-800 flex items-center px-4 text-red-500 text-xs">Error loading market data</div>;
+  if (error) return <div className="w-full h-10 bg-gray-900 border-b border-gray-800 flex items-center px-4 text-red-500 text-xs">{t('app.error')}</div>;
 
   const { data } = globalData;
 
@@ -35,12 +42,12 @@ const GlobalMarketBar = () => {
     <div className="w-full bg-gray-900 border-b border-gray-800 px-4 py-2 flex items-center justify-between overflow-x-auto whitespace-nowrap scrollbar-hide">
       <div className="flex items-center space-x-6">
         <MarketItem 
-          label="Top 100 Cap" 
+          label={t('detail_panel.market_cap')} 
           value={formatCurrency(data.total_market_cap.usd)} 
           // change={data.market_cap_change_percentage_24h_usd} // Not available in derived data
         />
         <MarketItem 
-          label="24h Vol" 
+          label={t('detail_panel.volume_24h')} 
           value={formatCurrency(data.total_volume.usd)} 
           icon={Activity}
         />
@@ -56,19 +63,29 @@ const GlobalMarketBar = () => {
           <span className="text-gray-400">Gas:</span>
           <span className="font-medium text-white flex items-center">
             <Zap size={14} className="text-yellow-500 mr-1" />
-            15 Gwei
+            {data.gas_price ? `${data.gas_price} Gwei` : '...'}
           </span>
         </div>
       </div>
       
       {/* Market Sentiment Bar (Mock for now as API doesn't provide direct sentiment) */}
       <div className="hidden md:flex items-center space-x-2 ml-6">
-        <span className="text-xs text-gray-400">Sentiment:</span>
+        <span className="text-xs text-gray-400">{t('global_bar.sentiment')}:</span>
         <div className="w-32 h-2 bg-gray-800 rounded-full overflow-hidden flex">
           <div className="h-full bg-green-500" style={{ width: '65%' }}></div>
           <div className="h-full bg-red-500" style={{ width: '35%' }}></div>
         </div>
       </div>
+
+      {/* Language Switcher */}
+      <button
+        onClick={toggleLanguage}
+        className="flex items-center text-xs text-gray-400 hover:text-white transition-colors ml-6"
+        title="Switch Language"
+      >
+        <Globe size={14} className="mr-1" />
+        {i18n.language === 'en' ? 'EN' : '中文'}
+      </button>
     </div>
   );
 };

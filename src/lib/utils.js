@@ -86,6 +86,7 @@ export const ECOSYSTEM_MAPPING = {
 
 // DefiLlama Slug Mapping (Symbol -> Slug)
 export const DEFILLAMA_MAPPING = {
+  // Protocols
   uni: 'uniswap',
   aave: 'aave',
   mkr: 'makerdao',
@@ -103,6 +104,16 @@ export const DEFILLAMA_MAPPING = {
   gmx: 'gmx',
   pendle: 'gmx', // Placeholder
   jup: 'jupiter-aggregator',
+  
+  // Chains (for TVL)
+  eth: 'ethereum',
+  sol: 'solana',
+  arb: 'arbitrum',
+  op: 'optimism',
+  matic: 'polygon',
+  bnb: 'bsc',
+  avax: 'avalanche',
+  trx: 'tron',
 };
 
 export const getCoinCategory = (coinSymbol) => {

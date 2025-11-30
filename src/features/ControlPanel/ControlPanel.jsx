@@ -2,6 +2,7 @@ import React from 'react';
 import { useAppStore } from '../../store/useAppStore';
 import { Clock, BarChart2, Layers } from 'lucide-react';
 import { clsx } from 'clsx';
+import { useTranslation } from 'react-i18next';
 
 const ControlPanel = () => {
   const { 
@@ -10,16 +11,15 @@ const ControlPanel = () => {
     ecosystemFilter, setEcosystemFilter,
     enterEcosystemView, goBackToSectors
   } = useAppStore();
+  const { t } = useTranslation();
 
   const handleEcosystemChange = (chain) => {
     const filter = chain.toLowerCase();
     setEcosystemFilter(filter);
     
     if (filter !== 'all') {
-      // Smart Drill-Down: Directly enter token view for the selected ecosystem
       enterEcosystemView();
     } else {
-      // Go back to sector view for "All"
       goBackToSectors();
     }
   };
@@ -56,21 +56,21 @@ const ControlPanel = () => {
         <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
           <BarChart2 className="text-white" size={20} />
         </div>
-        <h1 className="text-xl font-bold text-white tracking-tight">Chain Pulse</h1>
+        <h1 className="text-xl font-bold text-white tracking-tight">{t('app.title')}</h1>
       </div>
 
-      <ControlGroup title="Timeframe" icon={Clock}>
+      <ControlGroup title={t('control_panel.timeframe')} icon={Clock}>
         <ControlButton active={timeframe === '1h'} onClick={() => setTimeframe('1h')}>1H</ControlButton>
         <ControlButton active={timeframe === '24h'} onClick={() => setTimeframe('24h')}>24H</ControlButton>
         <ControlButton active={timeframe === '7d'} onClick={() => setTimeframe('7d')}>7D</ControlButton>
       </ControlGroup>
 
-      <ControlGroup title="Size By" icon={BarChart2}>
+      <ControlGroup title={t('control_panel.size_by')} icon={BarChart2}>
         <ControlButton active={sizingMetric === 'market_cap'} onClick={() => setSizingMetric('market_cap')}>M.Cap</ControlButton>
         <ControlButton active={sizingMetric === 'volume_24h'} onClick={() => setSizingMetric('volume_24h')}>Vol</ControlButton>
       </ControlGroup>
 
-      <ControlGroup title="Ecosystem" icon={Layers}>
+      <ControlGroup title={t('control_panel.ecosystem')} icon={Layers}>
         <div className="flex flex-col space-y-1 w-full">
           {['All', 'Ethereum', 'Solana', 'BNB Chain'].map((chain) => (
             <button
@@ -91,8 +91,8 @@ const ControlPanel = () => {
       
       <div className="mt-auto pt-6 border-t border-gray-800">
         <div className="text-xs text-gray-500">
-          <p>Data updated: Live</p>
-          <p className="mt-1">Source: CryptoCompare</p>
+          <p>{t('control_panel.updated')}</p>
+          <p className="mt-1">{t('control_panel.source')}</p>
         </div>
       </div>
     </div>
