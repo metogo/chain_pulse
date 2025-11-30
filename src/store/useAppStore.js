@@ -14,6 +14,9 @@ export const useAppStore = create((set) => ({
   selectedTokenId: null,
   isDetailPanelOpen: false,
 
+  // Hover Card State
+  pinnedTokenId: null,
+
   // Actions
   setTimeframe: (newTimeframe) => set({ timeframe: newTimeframe }),
   setSizingMetric: (newMetric) => set({ sizingMetric: newMetric }),
@@ -26,4 +29,7 @@ export const useAppStore = create((set) => ({
 
   selectToken: (tokenId) => set({ selectedTokenId: tokenId, isDetailPanelOpen: true }),
   closeDetailPanel: () => set({ isDetailPanelOpen: false, selectedTokenId: null }),
+
+  // Hover Card Actions
+  setPinnedTokenId: (tokenId) => set({ pinnedTokenId: tokenId }),
 }));

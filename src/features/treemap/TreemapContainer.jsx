@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect, useMemo } from 'react';
 import { useTreemapData } from './useTreemapData';
 import TreemapNode from './TreemapNode';
+import HoverCard from './HoverCard';
 import { useMarketData } from '../../hooks/useMarketData';
 import { getCoinCategory, getCoinEcosystems } from '../../lib/utils';
 import { useAppStore } from '../../store/useAppStore';
@@ -11,7 +12,17 @@ import { useTranslation } from 'react-i18next';
 const TreemapContainer = () => {
   const containerRef = useRef(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-  const { ecosystemFilter, viewMode, selectedSector, enterSector, goBackToSectors, enterEcosystemView, selectToken } = useAppStore();
+  const {
+    ecosystemFilter,
+    viewMode,
+    selectedSector,
+    enterSector,
+    goBackToSectors,
+    enterEcosystemView,
+    selectToken,
+    pinnedTokenId,
+    setPinnedTokenId
+  } = useAppStore();
   const [tooltip, setTooltip] = useState(null);
   const hoverTimeoutRef = useRef(null);
   const { t } = useTranslation();
@@ -90,7 +101,7 @@ const TreemapContainer = () => {
   const root = useTreemapData(processedData, dimensions.width, dimensions.height);
 
   const handleNodeMouseEnter = (e, data) => {
-    if (!data) return;
+    if (!data || pinnedTokenId) return; // Don't show new tooltip if one is pinned
     
     if (hoverTimeoutRef.current) {
       clearTimeout(hoverTimeoutRef.current);
@@ -98,15 +109,36 @@ const TreemapContainer = () => {
 
     hoverTimeoutRef.current = setTimeout(() => {
       const rect = containerRef.current.getBoundingClientRect();
+      // Calculate position to keep tooltip within bounds
+      let x = e.clientX - rect.left + 15;
+      let y = e.clientY - rect.top + 15;
+
+      // Adjust if too close to right edge
+      if (x + 320 > dimensions.width) {
+        x = e.clientX - rect.left - 335; // Width of card + padding
+      }
+
+      // Adjust if too close to bottom edge
+      if (y + 300 > dimensions.height) {
+        y = e.clientY - rect.top - 315; // Height of card + padding
+      }
+
       setTooltip({
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top,
+        x: Math.max(10, x), // Ensure not off-screen left
+        y: Math.max(10, y), // Ensure not off-screen top
         data: data
       });
     }, 200);
   };
 
-  const handleNodeMouseLeave = () => {
+  const handleNodeMouseLeave = (e) => {
+    // Check if moving to the tooltip
+    if (e && e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest('.hover-card-container')) {
+      return;
+    }
+
+    if (pinnedTokenId) return; // Don't hide if pinned
+
     if (hoverTimeoutRef.current) {
       clearTimeout(hoverTimeoutRef.current);
     }
@@ -114,15 +146,65 @@ const TreemapContainer = () => {
   };
 
   const handleNodeMouseMove = (e) => {
-    if (tooltip) {
+    if (tooltip && !pinnedTokenId) {
+      // Don't update position if hovering over the card itself
+      if (e.target.closest && e.target.closest('.hover-card-container')) {
+        return;
+      }
+
       const rect = containerRef.current.getBoundingClientRect();
+      let x = e.clientX - rect.left + 15;
+      let y = e.clientY - rect.top + 15;
+
+      if (x + 320 > dimensions.width) {
+        x = e.clientX - rect.left - 335;
+      }
+      if (y + 300 > dimensions.height) {
+        y = e.clientY - rect.top - 315;
+      }
+
       setTooltip(prev => ({
         ...prev,
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top
+        x: Math.max(10, x),
+        y: Math.max(10, y)
       }));
     }
   };
+
+  const handlePin = () => {
+    if (tooltip && tooltip.data) {
+      if (pinnedTokenId === tooltip.data.id) {
+        setPinnedTokenId(null); // Unpin
+      } else {
+        setPinnedTokenId(tooltip.data.id); // Pin
+      }
+    }
+  };
+
+  // Close pinned tooltip when clicking outside or pressing escape
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (pinnedTokenId && !e.target.closest('.hover-card-container')) {
+        setPinnedTokenId(null);
+        setTooltip(null);
+      }
+    };
+
+    const handleEsc = (e) => {
+      if (e.key === 'Escape' && pinnedTokenId) {
+        setPinnedTokenId(null);
+        setTooltip(null);
+      }
+    };
+
+    window.addEventListener('click', handleClickOutside);
+    window.addEventListener('keydown', handleEsc);
+
+    return () => {
+      window.removeEventListener('click', handleClickOutside);
+      window.removeEventListener('keydown', handleEsc);
+    };
+  }, [pinnedTokenId, setPinnedTokenId]);
 
   // Group By Switcher Component
   const GroupBySwitcher = () => (
@@ -206,13 +288,16 @@ const TreemapContainer = () => {
           </div>
         )}
 
-        {root && root.leaves().map((leafNode) => {
+        {root && root.leaves().map((leafNode, index) => {
           if (!leafNode.data) return null;
           
+          // Create a unique key using id/name and index to ensure uniqueness
+          const uniqueKey = `${leafNode.data.id || leafNode.data.name || 'node'}-${index}`;
+
           return (
-            <TreemapNode 
-              key={leafNode.data.id || leafNode.data.name || Math.random()} 
-              node={leafNode} 
+            <TreemapNode
+              key={uniqueKey}
+              node={leafNode}
               isSector={viewMode === 'sector'}
               onClick={() => {
                 if (viewMode === 'sector') {
@@ -233,47 +318,16 @@ const TreemapContainer = () => {
           </div>
         )}
 
-        {/* Tooltip */}
+        {/* Hover Card / Tooltip */}
         {tooltip && tooltip.data && (
-          <div 
-            className="absolute z-50 bg-gray-900 border border-gray-700 rounded-lg shadow-xl p-3 pointer-events-none text-sm w-56"
-            style={{ 
-              left: Math.min(tooltip.x + 15, dimensions.width - 240), 
-              top: Math.min(tooltip.y + 15, dimensions.height - 150)
-            }}
-          >
-            <div className="font-bold text-white mb-1 flex justify-between items-center">
-              <span>{tooltip.data.name}</span>
-              <span className="text-gray-400 text-xs">{tooltip.data.symbol?.toUpperCase()}</span>
-            </div>
-            <div className="flex justify-between text-gray-300">
-              <span>Price:</span>
-              <span className="text-white font-mono">
-                {tooltip.data.current_price ? `$${tooltip.data.current_price.toLocaleString()}` : 'N/A'}
-              </span>
-            </div>
-            <div className="flex justify-between text-gray-300">
-              <span>24h Change:</span>
-              <span className={tooltip.data.current_change >= 0 ? "text-green-500" : "text-red-500"}>
-                {tooltip.data.current_change > 0 ? '+' : ''}{tooltip.data.current_change?.toFixed(2)}%
-              </span>
-            </div>
-            <div className="flex justify-between text-gray-300 mt-1 pt-1 border-t border-gray-800">
-              <span>M. Cap:</span>
-              <span className="text-white">
-                {tooltip.data.market_cap ? `$${(tooltip.data.market_cap / 1e9).toFixed(2)}B` : 'N/A'}
-              </span>
-            </div>
-            {/* Sparkline Placeholder */}
-            <div className="mt-2 h-8 w-full flex items-end space-x-0.5 opacity-50">
-               {Array.from({ length: 20 }).map((_, i) => (
-                 <div 
-                   key={i} 
-                   className={`flex-1 ${tooltip.data.current_change >= 0 ? 'bg-green-500' : 'bg-red-500'}`}
-                   style={{ height: `${Math.random() * 100}%` }}
-                 ></div>
-               ))}
-            </div>
+          <div className="hover-card-container">
+            <HoverCard
+              tokenId={tooltip.data.id}
+              data={tooltip.data}
+              position={{ x: tooltip.x, y: tooltip.y }}
+              isPinned={pinnedTokenId === tooltip.data.id}
+              onPin={handlePin}
+            />
           </div>
         )}
       </div>

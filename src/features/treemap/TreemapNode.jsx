@@ -63,6 +63,7 @@ const TreemapNode = ({ node, isSector, onClick, onMouseEnter, onMouseLeave }) =>
   };
 
   const handleMouseEnter = (e) => {
+    console.log('[DEBUG_NODE] Mouse enter:', data.symbol || data.name);
     if (onMouseEnter) {
       // Pass data with calculated change for tooltip
       onMouseEnter(e, { ...data, current_change: change });
@@ -88,7 +89,6 @@ const TreemapNode = ({ node, isSector, onClick, onMouseEnter, onMouseLeave }) =>
       onClick={handleClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={onMouseLeave}
-      title={`${data.name} (${isSector ? 'Sector' : data.symbol.toUpperCase()})\nPrice: ${isSector ? 'N/A' : '$' + data.current_price}\nChange: ${change?.toFixed(2)}%`}
     >
       {/* Always try to show Symbol/Name if width allows at least 2-3 chars */}
       {width > 20 && height > 14 && (
