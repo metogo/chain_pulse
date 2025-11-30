@@ -16,9 +16,9 @@ const normalizeCoinData = (coin, index) => {
       market_cap: coin.market_cap,
       market_cap_rank: coin.market_cap_rank,
       total_volume: coin.total_volume,
-      price_change_percentage_24h: coin.price_change_percentage_24h,
-      price_change_percentage_1h_in_currency: coin.price_change_percentage_1h_in_currency,
-      price_change_percentage_7d_in_currency: coin.price_change_percentage_7d_in_currency,
+      price_change_percentage_24h: coin.price_change_percentage_24h || 0,
+      price_change_percentage_1h_in_currency: coin.price_change_percentage_1h_in_currency || 0,
+      price_change_percentage_7d_in_currency: coin.price_change_percentage_7d_in_currency || 0,
     };
   } else {
     // CryptoCompare Data (Fallback)
@@ -94,8 +94,12 @@ export const useMarketData = (currency = 'USD', limit = 100) => {
           return [];
         }
         const normalized = data.map((coin, index) => normalizeCoinData(coin, index));
-        console.log('[DEBUG_TREEMAP] Normalized Data (First Item):', normalized[0]);
-        return normalized;
+        
+        // Deduplicate based on ID to prevent key collisions
+        const uniqueData = Array.from(new Map(normalized.map(item => [item.id, item])).values());
+
+        console.log('[DEBUG_TREEMAP] Normalized Data (First Item):', uniqueData[0]);
+        return uniqueData;
       } catch (err) {
         console.error('[DEBUG_TREEMAP] Error fetching market data:', err);
         throw err;

@@ -48,6 +48,14 @@ const Leaderboards = () => {
     }
   };
 
+  const formatVolume = (num) => {
+    if (!num) return '0';
+    if (num >= 1.0e+9) return (num / 1.0e+9).toFixed(2) + "B";
+    if (num >= 1.0e+6) return (num / 1.0e+6).toFixed(2) + "M";
+    if (num >= 1.0e+3) return (num / 1.0e+3).toFixed(2) + "K";
+    return num.toLocaleString();
+  };
+
   const TabButton = ({ id, label, icon: Icon }) => (
     <button
       onClick={() => setActiveTab(id)}
@@ -77,6 +85,8 @@ const Leaderboards = () => {
         ) : (
           items.map((item, index) => {
             const change = getChangeValue(item);
+            const isVolumeTab = activeTab === 'volume';
+
             return (
               <div
                 key={item.id}
@@ -100,13 +110,19 @@ const Leaderboards = () => {
                   <span className="text-xs text-gray-300">
                     ${item.current_price < 1 ? item.current_price.toFixed(4) : item.current_price.toLocaleString()}
                   </span>
-                  <span className={clsx(
-                    "text-[10px] font-medium",
-                    change >= 0 ? "text-green-500" : "text-red-500"
-                  )}>
-                    {change >= 0 ? '+' : ''}
-                    {change?.toFixed(2)}%
-                  </span>
+                  {isVolumeTab ? (
+                    <span className="text-[10px] font-medium text-gray-400">
+                      ${formatVolume(item.total_volume)}
+                    </span>
+                  ) : (
+                    <span className={clsx(
+                      "text-[10px] font-medium",
+                      change >= 0 ? "text-green-500" : "text-red-500"
+                    )}>
+                      {change >= 0 ? '+' : ''}
+                      {change?.toFixed(2)}%
+                    </span>
+                  )}
                 </div>
               </div>
             );
