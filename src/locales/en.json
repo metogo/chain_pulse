@@ -12,7 +12,7 @@
     "size_by": "Size By",
     "ecosystem": "Ecosystem",
     "updated": "Data updated: Live",
-    "source": "Source: CryptoCompare"
+    "source": "Sources: CoinCap, CoinGecko, DefiLlama, Alternative.me, Binance"
   },
   "treemap": {
     "group_by": "Group By:",
@@ -89,6 +89,7 @@
     "new_addresses_24h": "New Addresses (24h)",
     "large_tx_count_24h": "Large Tx Count (24h)",
     "active_addresses_chart_placeholder": "Active Addresses Chart Placeholder",
+    "holder_analysis": "Holder Analysis",
     "whale_holdings": "Whale Holdings",
     "avg_tx_value": "Avg Tx Value",
     "development_activity": "Development Activity",
@@ -120,5 +121,13 @@
   "market_breadth": {
     "title": "Market Breadth (24H)",
     "tooltip": "In the top {{total}} assets, {{gainers}} gained, {{losers}} lost, and {{unchanged}} remained unchanged in the last 24 hours."
+  },
+  "macro": {
+    "fear_greed": "Fear & Greed Index",
+    "fear_greed_tooltip": "This index combines volatility, market volume, social media heat, and other factors to measure current market sentiment.",
+    "long_short": "Long/Short Ratio (BTC)",
+    "long_short_tooltip": "This indicator shows the ratio of accounts holding long positions to those holding short positions in the derivatives market.",
+    "defi_tvl": "DeFi TVL",
+    "defi_tvl_tooltip": "Total Value Locked (TVL) represents the total value of assets locked in all DeFi protocols, a key indicator of the DeFi ecosystem's scale."
   }
 }

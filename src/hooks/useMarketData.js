@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchMarketData, fetchCoinDetails, fetchCoinMarketChart, fetchCoinGeneralInfo, fetchProtocolTVL, fetchProtocolFees, fetchBlockchairStats, fetchGasPrice, fetchFearAndGreedIndex, fetchOnChainAnalytics, fetchInfluenceMetrics, fetchMarketBreadthData } from '../api/client';
+import { fetchMarketData, fetchCoinDetails, fetchCoinMarketChart, fetchCoinGeneralInfo, fetchProtocolTVL, fetchProtocolFees, fetchBlockchairStats, fetchGasPrice, fetchFearAndGreedIndex, fetchOnChainAnalytics, fetchInfluenceMetrics, fetchMarketBreadthData, fetchLongShortRatio, fetchGlobalDeFiTVL } from '../api/client';
 import { getDefiLlamaSlug } from '../lib/utils';
 
 // Helper to normalize CoinGecko data to our app's expected format
@@ -229,6 +229,24 @@ export const useFearAndGreedIndex = () => {
   return useQuery({
     queryKey: ['fearAndGreedIndex'],
     queryFn: fetchFearAndGreedIndex,
+    staleTime: 3600000, // 1 hour
+  });
+};
+
+// Hook for Long/Short Ratio
+export const useLongShortRatio = (symbol = 'BTC') => {
+  return useQuery({
+    queryKey: ['longShortRatio', symbol],
+    queryFn: () => fetchLongShortRatio(symbol),
+    staleTime: 300000, // 5 minutes
+  });
+};
+
+// Hook for Global DeFi TVL
+export const useGlobalDeFiTVL = () => {
+  return useQuery({
+    queryKey: ['globalDeFiTVL'],
+    queryFn: fetchGlobalDeFiTVL,
     staleTime: 3600000, // 1 hour
   });
 };

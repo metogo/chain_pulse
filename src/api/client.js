@@ -5,6 +5,7 @@ const CRYPTOCOMPARE_BASE_URL = 'https://min-api.cryptocompare.com/data';
 const DEFILLAMA_BASE_URL = 'https://api.llama.fi';
 const BLOCKCHAIR_BASE_URL = 'https://api.blockchair.com';
 const ALTERNATIVE_ME_BASE_URL = 'https://api.alternative.me';
+const BINANCE_FUTURES_BASE_URL = 'https://fapi.binance.com/futures/data';
 
 // Create an axios instance for CryptoCompare
 const api = axios.create({
@@ -27,6 +28,12 @@ const blockchairApi = axios.create({
 // Create an axios instance for Alternative.me
 const alternativeApi = axios.create({
   baseURL: ALTERNATIVE_ME_BASE_URL,
+  timeout: 10000,
+});
+
+// Create an axios instance for Binance Futures
+const binanceApi = axios.create({
+  baseURL: BINANCE_FUTURES_BASE_URL,
   timeout: 10000,
 });
 
@@ -235,6 +242,59 @@ export const fetchFearAndGreedIndex = async () => {
     return response.data.data[0];
   } catch (error) {
     console.warn('Failed to fetch Fear and Greed Index:', error.message);
+    return null;
+  }
+};
+
+// Fetch Long/Short Ratio (Binance API)
+export const fetchLongShortRatio = async (symbol = 'BTC') => {
+  try {
+    // Binance uses BTCUSDT format
+    const binanceSymbol = `${symbol.toUpperCase()}USDT`;
+    const response = await binanceApi.get('/topLongShortAccountRatio', {
+      params: {
+        symbol: binanceSymbol,
+        period: '5m'
+      }
+    });
+    
+    if (response.data && response.data.length > 0) {
+      const latest = response.data[0];
+      return {
+        longShortRatio: parseFloat(latest.longShortRatio),
+        longAccount: parseFloat(latest.longAccount) * 100,
+        shortAccount: parseFloat(latest.shortAccount) * 100,
+        symbol: symbol
+      };
+    }
+    return null;
+  } catch (error) {
+    console.warn('Failed to fetch Long/Short Ratio:', error.message);
+    return null;
+  }
+};
+
+// Fetch Global DeFi TVL
+export const fetchGlobalDeFiTVL = async () => {
+  try {
+    // DefiLlama historical charts
+    const response = await llamaApi.get('/v2/historicalChainTvl');
+    // Response is array of { date, tvl }
+    const data = response.data;
+    if (data && data.length > 0) {
+      const latest = data[data.length - 1];
+      const prev = data[data.length - 2]; // 24h ago (approx, data is daily)
+      
+      const change = prev ? ((latest.tvl - prev.tvl) / prev.tvl) * 100 : 0;
+      
+      return {
+        tvl: latest.tvl,
+        change_24h: change
+      };
+    }
+    return null;
+  } catch (error) {
+    console.warn('Failed to fetch Global DeFi TVL:', error.message);
     return null;
   }
 };

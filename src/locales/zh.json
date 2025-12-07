@@ -12,7 +12,7 @@
     "size_by": "面积依据",
     "ecosystem": "生态系统",
     "updated": "数据更新：实时",
-    "source": "数据源：CryptoCompare"
+    "source": "数据源：CoinCap, CoinGecko, DefiLlama, Alternative.me, Binance"
   },
   "treemap": {
     "group_by": "分组依据：",
@@ -121,5 +121,13 @@
   "market_breadth": {
     "title": "市场宽度 (24H)",
     "tooltip": "在市值排名前 {{total}} 的资产中，过去24小时有 {{gainers}} 个上涨，{{losers}} 个下跌，{{unchanged}} 个持平。"
+  },
+  "macro": {
+    "fear_greed": "恐惧与贪婪指数",
+    "fear_greed_tooltip": "该指数综合了波动性、市场交易量、社交媒体热度等多个因素，衡量当前市场情绪。",
+    "long_short": "多空人数比 (BTC)",
+    "long_short_tooltip": "该指标显示了在衍生品市场中，持有多头仓位和空头仓位的账户数量比例。",
+    "defi_tvl": "DeFi 总锁仓量 (TVL)",
+    "defi_tvl_tooltip": "总锁仓量(TVL)代表当前所有DeFi协议中锁定的资产总价值，是衡量DeFi生态规模的关键指标。"
   }
 }
