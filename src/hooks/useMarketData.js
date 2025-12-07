@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchMarketData, fetchCoinDetails, fetchCoinMarketChart, fetchCoinGeneralInfo, fetchProtocolTVL, fetchProtocolFees, fetchBlockchairStats, fetchGasPrice } from '../api/client';
+import { fetchMarketData, fetchCoinDetails, fetchCoinMarketChart, fetchCoinGeneralInfo, fetchProtocolTVL, fetchProtocolFees, fetchBlockchairStats, fetchGasPrice, fetchFearAndGreedIndex, fetchOnChainAnalytics, fetchInfluenceMetrics, fetchMarketBreadthData } from '../api/client';
 import { getDefiLlamaSlug } from '../lib/utils';
 
 // Helper to normalize CoinGecko data to our app's expected format
@@ -84,12 +84,12 @@ export const useGasPrice = () => {
 };
 
 // Hook for Market Data (Coins List)
-export const useMarketData = (currency = 'USD', limit = 100) => {
+export const useMarketData = (currency = 'USD', limit = 100, category = null) => {
   return useQuery({
-    queryKey: ['marketData', currency, limit],
+    queryKey: ['marketData', currency, limit, category],
     queryFn: async () => {
       try {
-        const data = await fetchMarketData(currency, limit);
+        const data = await fetchMarketData(currency, limit, category);
         console.log('[DEBUG_TREEMAP] Fetched Market Data (Raw):', data?.length, data?.[0]); // Debug log
         if (!data || !Array.isArray(data)) {
           console.warn('[DEBUG_TREEMAP] Market Data is not an array:', data);
@@ -176,6 +176,8 @@ export const useCoinDetails = (coinId) => {
           market_cap: { usd: raw.MKTCAP || 0 },
           total_volume: { usd: raw.TOTALVOLUME24H || 0 },
           price_change_percentage_24h: raw.CHANGEPCT24HOUR || 0,
+          high_24h: raw.HIGH24HOUR || 0,
+          low_24h: raw.LOW24HOUR || 0,
           circulating_supply: raw.SUPPLY || 0,
           total_supply: raw.SUPPLY || 0, // CryptoCompare often just gives SUPPLY. We can use it as total for now.
           fdv: (raw.PRICE && raw.SUPPLY) ? raw.PRICE * raw.SUPPLY : 0, // Calculate FDV
@@ -207,20 +209,75 @@ export const useCoinDetails = (coinId) => {
 // Hook for Coin Market Chart
 export const useCoinMarketChart = (coinId, days = 1) => {
   const symbol = coinId ? coinId.toUpperCase() : null;
-  // CryptoCompare history limit is by count, not days directly. 
-  // 1 day = 24 hours. 7 days = 168 hours.
-  const limit = days === 1 ? 24 : 168; 
 
   return useQuery({
-    queryKey: ['coinMarketChart', symbol, limit],
+    queryKey: ['coinMarketChart', symbol, days],
     queryFn: async () => {
       if (!symbol) return { prices: [] };
-      const data = await fetchCoinMarketChart(symbol, limit);
+      const data = await fetchCoinMarketChart(symbol, days);
       // Normalize to [timestamp, price] format
       const prices = data.map(item => [item.time * 1000, item.close]);
       return { prices };
     },
     enabled: !!coinId,
+    staleTime: 60000, // 1 minute
+  });
+};
+
+// Hook for Fear and Greed Index
+export const useFearAndGreedIndex = () => {
+  return useQuery({
+    queryKey: ['fearAndGreedIndex'],
+    queryFn: fetchFearAndGreedIndex,
+    staleTime: 3600000, // 1 hour
+  });
+};
+
+// Hook for On-Chain Analytics
+export const useOnChainAnalytics = (coinId) => {
+  return useQuery({
+    queryKey: ['onChainAnalytics', coinId],
+    queryFn: () => fetchOnChainAnalytics(coinId),
+    enabled: !!coinId,
+    staleTime: 300000, // 5 minutes
+  });
+};
+
+// Hook for Influence Metrics
+export const useInfluenceMetrics = (coinId) => {
+  return useQuery({
+    queryKey: ['influenceMetrics', coinId],
+    queryFn: () => fetchInfluenceMetrics(coinId),
+    enabled: !!coinId,
+    staleTime: 300000, // 5 minutes
+  });
+};
+
+// Hook for Market Breadth
+export const useMarketBreadth = () => {
+  return useQuery({
+    queryKey: ['marketBreadth'],
+    queryFn: async () => {
+      const data = await fetchMarketBreadthData();
+      if (!data || !Array.isArray(data)) return null;
+
+      let gainers = 0;
+      let losers = 0;
+      let unchanged = 0;
+
+      data.forEach(coin => {
+        if (coin.price_change_percentage_24h > 0) gainers++;
+        else if (coin.price_change_percentage_24h < 0) losers++;
+        else unchanged++;
+      });
+
+      return {
+        gainers,
+        losers,
+        unchanged,
+        total_tracked: data.length
+      };
+    },
     staleTime: 60000, // 1 minute
   });
 };

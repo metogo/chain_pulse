@@ -1,9 +1,11 @@
 import React from 'react';
 import { useAppStore } from '../../store/useAppStore';
 import { clsx } from 'clsx';
+import { useNavigate } from 'react-router-dom';
 
 const TreemapNode = ({ node, isSector, onClick, onMouseEnter, onMouseLeave }) => {
-  const { selectToken, timeframe } = useAppStore();
+  const { timeframe } = useAppStore();
+  const navigate = useNavigate();
   
   // Only render leaf nodes (tokens), not category nodes
   // Unless we are in Sector view, where we render sectors as leaves
@@ -57,8 +59,8 @@ const TreemapNode = ({ node, isSector, onClick, onMouseEnter, onMouseLeave }) =>
       // In sector view, use the passed onClick (drill down)
       if (onClick) onClick();
     } else {
-      // In token view, open detail panel
-      selectToken(data.id);
+      // In token view, navigate to asset page
+      navigate(`/asset/${data.id}`);
     }
   };
 

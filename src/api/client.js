@@ -4,6 +4,7 @@ import axios from 'axios';
 const CRYPTOCOMPARE_BASE_URL = 'https://min-api.cryptocompare.com/data';
 const DEFILLAMA_BASE_URL = 'https://api.llama.fi';
 const BLOCKCHAIR_BASE_URL = 'https://api.blockchair.com';
+const ALTERNATIVE_ME_BASE_URL = 'https://api.alternative.me';
 
 // Create an axios instance for CryptoCompare
 const api = axios.create({
@@ -23,6 +24,12 @@ const blockchairApi = axios.create({
   timeout: 10000,
 });
 
+// Create an axios instance for Alternative.me
+const alternativeApi = axios.create({
+  baseURL: ALTERNATIVE_ME_BASE_URL,
+  timeout: 10000,
+});
+
 // Fetch Global Market Data (Total Market Cap, Volume)
 export const fetchGlobalData = async () => {
   // This is a workaround as CryptoCompare's global data might require an API key for some endpoints.
@@ -32,25 +39,27 @@ export const fetchGlobalData = async () => {
 };
 
 // Fetch Market Data (Top Coins by Market Cap)
-export const fetchMarketData = async (currency = 'USD', limit = 100) => {
+export const fetchMarketData = async (currency = 'USD', limit = 100, category = null) => {
   // Using CoinGecko for better 7D change data
   try {
-    throw new Error('Force fallback to CryptoCompare'); // Temporary force fallback
-    console.log('[API] Fetching market data from CoinGecko...');
+    const params = {
+      vs_currency: currency.toLowerCase(),
+      order: 'market_cap_desc',
+      per_page: limit,
+      page: 1,
+      sparkline: true,
+      price_change_percentage: '1h,24h,7d'
+    };
+    
+    if (category) {
+      params.category = category;
+    }
+
     const response = await axios.get('https://api.coingecko.com/api/v3/coins/markets', {
-      params: {
-        vs_currency: currency.toLowerCase(),
-        order: 'market_cap_desc',
-        per_page: limit,
-        page: 1,
-        sparkline: false,
-        price_change_percentage: '1h,24h,7d'
-      },
+      params: params,
     });
-    console.log('[API] CoinGecko success:', response.data?.length);
     return response.data;
   } catch (error) {
-    console.error('[API] CoinGecko failed:', error.message);
     console.warn('CoinGecko fetch failed, falling back to CryptoCompare', error);
     // Fallback to CryptoCompare
     const response = await api.get('/top/mktcapfull', {
@@ -60,6 +69,25 @@ export const fetchMarketData = async (currency = 'USD', limit = 100) => {
       },
     });
     return response.data.Data;
+  }
+};
+
+// Fetch Market Breadth Data (Top 250 for MVP to avoid rate limits)
+export const fetchMarketBreadthData = async () => {
+  try {
+    const response = await axios.get('https://api.coingecko.com/api/v3/coins/markets', {
+      params: {
+        vs_currency: 'usd',
+        order: 'market_cap_desc',
+        per_page: 250, // Fetch top 250
+        page: 1,
+        price_change_percentage: '24h'
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.warn('Failed to fetch market breadth data:', error);
+    return [];
   }
 };
 
@@ -90,6 +118,9 @@ export const fetchCoinMarketChart = async (coinSymbol, days = 1) => {
   } else if (days === 30) {
     endpoint = '/v2/histohour';
     limit = 720; // 30 days in hours
+  } else if (days === 365) {
+    endpoint = '/v2/histoday';
+    limit = 365; // 365 days
   }
 
   const response = await api.get(endpoint, {
@@ -195,4 +226,41 @@ export const fetchBlockchairStats = async (chain) => {
     console.warn(`Failed to fetch Blockchair stats for ${chain}:`, error.message);
     return null;
   }
+};
+
+// Fetch Fear and Greed Index
+export const fetchFearAndGreedIndex = async () => {
+  try {
+    const response = await alternativeApi.get('/fng/');
+    return response.data.data[0];
+  } catch (error) {
+    console.warn('Failed to fetch Fear and Greed Index:', error.message);
+    return null;
+  }
+};
+
+// Fetch On-chain Analytics (Mock)
+export const fetchOnChainAnalytics = async (coinId) => {
+  // Mock data for now
+  return {
+    active_addresses_history: Array.from({ length: 90 }, (_, i) => ({ time: Date.now() - (89 - i) * 86400000, value: Math.floor(Math.random() * 100000) + 50000 })),
+    whale_holdings_percent: 42.5,
+    new_addresses_24h: 12500,
+    tx_count_history: Array.from({ length: 90 }, (_, i) => ({ time: Date.now() - (89 - i) * 86400000, value: Math.floor(Math.random() * 500000) + 200000 })),
+    large_tx_count_24h: 150,
+    avg_tx_value_24h: 25000
+  };
+};
+
+// Fetch Influence Metrics (Mock)
+export const fetchInfluenceMetrics = async (coinId) => {
+  // Mock data for now
+  return {
+    github_commits_history: Array.from({ length: 90 }, (_, i) => ({ time: Date.now() - (89 - i) * 86400000, value: Math.floor(Math.random() * 20) })),
+    contributors_30d: 45,
+    stars: 12500,
+    social_volume_history: Array.from({ length: 30 }, (_, i) => ({ time: Date.now() - (29 - i) * 86400000, value: Math.floor(Math.random() * 5000) + 1000 })),
+    social_sentiment_positive_percent: 75,
+    social_dominance_percent: 0.8
+  };
 };

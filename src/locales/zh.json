@@ -72,5 +72,54 @@
   },
   "global_bar": {
     "sentiment": "市场情绪"
+  },
+  "asset_page": {
+    "back_to_market": "返回市场",
+    "official_links": "官方链接",
+    "high_low_24h": "24小时高/低",
+    "overview": "概览",
+    "analysis": "分析",
+    "influence": "影响力",
+    "about": "关于",
+    "key_data": "关键数据",
+    "genesis_date": "创世日期",
+    "consensus": "共识机制",
+    "tags": "标签",
+    "on_chain_activity": "链上活动",
+    "new_addresses_24h": "新增地址 (24h)",
+    "large_tx_count_24h": "大额交易数 (24h)",
+    "active_addresses_chart_placeholder": "活跃地址图表占位符",
+    "holder_analysis": "持仓分析",
+    "whale_holdings": "巨鲸持仓",
+    "avg_tx_value": "平均交易额",
+    "development_activity": "开发活动",
+    "contributors_30d": "贡献者 (30天)",
+    "github_stars": "GitHub Stars",
+    "commits_chart_placeholder": "提交记录图表占位符",
+    "social_influence": "社交影响力",
+    "sentiment": "情绪",
+    "dominance": "主导率",
+    "positive": "正面",
+    "market_sentiment": "市场情绪",
+    "related_assets": "相关资产"
+  },
+  "chart": {
+    "cursor": "光标",
+    "trend_line": "趋势线",
+    "horizontal_line": "水平线",
+    "clear_drawings": "清除绘图",
+    "indicators": "指标",
+    "overlays": "叠加指标",
+    "oscillators": "震荡指标",
+    "sma": "SMA",
+    "ema": "EMA",
+    "bb": "布林带",
+    "rsi": "RSI",
+    "macd": "MACD",
+    "coming_soon": "即将推出"
+  },
+  "market_breadth": {
+    "title": "市场宽度 (24H)",
+    "tooltip": "在市值排名前 {{total}} 的资产中，过去24小时有 {{gainers}} 个上涨，{{losers}} 个下跌，{{unchanged}} 个持平。"
   }
 }

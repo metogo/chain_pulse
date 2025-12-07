@@ -72,5 +72,53 @@
   },
   "global_bar": {
     "sentiment": "Sentiment"
+  },
+  "asset_page": {
+    "back_to_market": "Back to Market",
+    "official_links": "Official Links",
+    "high_low_24h": "24h High / Low",
+    "overview": "Overview",
+    "analysis": "Analysis",
+    "influence": "Influence",
+    "about": "About",
+    "key_data": "Key Data",
+    "genesis_date": "Genesis Date",
+    "consensus": "Consensus",
+    "tags": "Tags",
+    "on_chain_activity": "On-Chain Activity",
+    "new_addresses_24h": "New Addresses (24h)",
+    "large_tx_count_24h": "Large Tx Count (24h)",
+    "active_addresses_chart_placeholder": "Active Addresses Chart Placeholder",
+    "whale_holdings": "Whale Holdings",
+    "avg_tx_value": "Avg Tx Value",
+    "development_activity": "Development Activity",
+    "contributors_30d": "Contributors (30d)",
+    "github_stars": "GitHub Stars",
+    "commits_chart_placeholder": "Commits Chart Placeholder",
+    "social_influence": "Social Influence",
+    "sentiment": "Sentiment",
+    "dominance": "Dominance",
+    "positive": "Positive",
+    "market_sentiment": "Market Sentiment",
+    "related_assets": "Related Assets"
+  },
+  "chart": {
+    "cursor": "Cursor",
+    "trend_line": "Trend Line",
+    "horizontal_line": "Horizontal Line",
+    "clear_drawings": "Clear Drawings",
+    "indicators": "Indicators",
+    "overlays": "Overlays",
+    "oscillators": "Oscillators",
+    "sma": "SMA",
+    "ema": "EMA",
+    "bb": "Bollinger Bands",
+    "rsi": "RSI",
+    "macd": "MACD",
+    "coming_soon": "Coming Soon"
+  },
+  "market_breadth": {
+    "title": "Market Breadth (24H)",
+    "tooltip": "In the top {{total}} assets, {{gainers}} gained, {{losers}} lost, and {{unchanged}} remained unchanged in the last 24 hours."
   }
 }

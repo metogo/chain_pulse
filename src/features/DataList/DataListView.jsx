@@ -5,10 +5,12 @@ import { useTranslation } from 'react-i18next';
 import { clsx } from 'clsx';
 import { ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react';
 import { generateSparklinePath } from '../../lib/utils';
+import { useNavigate } from 'react-router-dom';
 
 const DataListView = () => {
   const { data: marketData, isLoading } = useMarketData();
   const { selectToken } = useAppStore();
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const [sortConfig, setSortConfig] = useState({ key: 'market_cap', direction: 'desc' });
 
@@ -99,9 +101,9 @@ const DataListView = () => {
             const sparklineColor = isPositive ? '#22c55e' : '#ef4444';
 
             return (
-              <tr 
-                key={coin.id} 
-                onClick={() => selectToken(coin.id)}
+              <tr
+                key={coin.id}
+                onClick={() => navigate(`/asset/${coin.id}`)}
                 className="hover:bg-gray-900/50 transition-colors cursor-pointer group"
               >
                 <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
