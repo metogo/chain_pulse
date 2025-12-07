@@ -55,13 +55,7 @@ const TreemapNode = ({ node, isSector, onClick, onMouseEnter, onMouseLeave }) =>
 
   const handleClick = (e) => {
     e.stopPropagation();
-    if (isSector) {
-      // In sector view, use the passed onClick (drill down)
-      if (onClick) onClick();
-    } else {
-      // In token view, navigate to asset page
-      navigate(`/asset/${data.id}`);
-    }
+    if (onClick) onClick();
   };
 
   const handleMouseEnter = (e) => {
@@ -85,7 +79,8 @@ const TreemapNode = ({ node, isSector, onClick, onMouseEnter, onMouseLeave }) =>
         backgroundColor: backgroundColor,
       }}
       className={clsx(
-        "border border-gray-900 hover:brightness-110 cursor-pointer transition-all duration-200 flex flex-col items-center justify-center overflow-hidden p-0.5 text-white",
+        "hover:brightness-110 cursor-pointer transition-all duration-200 flex flex-col items-center justify-center overflow-hidden p-0.5 text-white",
+        isSector ? "border-2 border-gray-800 shadow-inner" : "border border-gray-900",
         "group"
       )}
       onClick={handleClick}

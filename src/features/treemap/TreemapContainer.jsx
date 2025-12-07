@@ -24,7 +24,7 @@ const TreemapContainer = () => {
   const hoverTimeoutRef = useRef(null);
   const { t } = useTranslation();
   
-  const { data: marketData, isLoading, error } = useMarketData();
+  const { data: marketData, isLoading, error } = useMarketData('USD', 100, null, ecosystemFilter);
 
   useEffect(() => {
     if (!containerRef.current) {

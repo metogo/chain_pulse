@@ -16,12 +16,7 @@ const ControlPanel = () => {
   const handleEcosystemChange = (chain) => {
     const filter = chain.toLowerCase();
     setEcosystemFilter(filter);
-    
-    if (filter !== 'all') {
-      enterEcosystemView();
-    } else {
-      goBackToSectors();
-    }
+    // Do not automatically change view mode. Let user decide via "Group By" or Drill-down.
   };
 
   const ControlGroup = ({ title, icon: Icon, children }) => (

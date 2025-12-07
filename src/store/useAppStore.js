@@ -7,7 +7,7 @@ export const useAppStore = create((set) => ({
   ecosystemFilter: 'all', // 'all', 'ethereum', 'solana', etc.
   
   // Main View State (Treemap vs List)
-  mainViewMode: localStorage.getItem('mainViewMode') || 'treemap', // 'treemap' or 'list'
+  mainViewMode: localStorage.getItem('mainViewMode') || 'list', // 'treemap' or 'list'
 
   // Drill-Down State (Treemap Internal)
   viewMode: 'token', // 'sector' (L1) or 'token' (L2) - Default to 'token' (Coins)
@@ -34,7 +34,10 @@ export const useAppStore = create((set) => ({
   
   // Drill-Down Actions
   enterSector: (sectorName) => set({ viewMode: 'token', selectedSector: sectorName }),
-  enterEcosystemView: () => set({ viewMode: 'token', selectedSector: null }), // New action for direct drill-down
+  setViewMode: (mode) => set({ viewMode: mode, selectedSector: null }), // Explicitly set view mode (Coins vs Sectors)
+  
+  // Deprecated but keeping for compatibility if needed, mapped to setViewMode
+  enterEcosystemView: () => set({ viewMode: 'token', selectedSector: null }),
   goBackToSectors: () => set({ viewMode: 'sector', selectedSector: null }),
 
   selectToken: (tokenId) => set({ selectedTokenId: tokenId, isDetailPanelOpen: true }),

@@ -7,13 +7,15 @@ import TreemapContainer from '../treemap/TreemapContainer';
 import DataListView from '../DataList/DataListView';
 
 const MainView = () => {
-  const { 
-    viewMode, 
-    mainViewMode, 
+  const {
+    viewMode,
+    mainViewMode,
     setMainViewMode,
-    selectedSector, 
-    enterEcosystemView, 
-    goBackToSectors 
+    selectedSector,
+    ecosystemFilter,
+    setEcosystemFilter,
+    setViewMode,
+    goBackToSectors
   } = useAppStore();
   const { t } = useTranslation();
 
@@ -21,7 +23,7 @@ const MainView = () => {
   const GroupBySwitcher = () => (
     <div className="flex bg-gray-800 rounded-lg p-0.5 ml-4">
       <button
-        onClick={() => enterEcosystemView()} // Switch to 'token' view (Coins)
+        onClick={() => setViewMode('token')} // Switch to 'token' view (Coins)
         className={clsx(
           "flex items-center px-3 py-1 text-xs font-medium rounded-md transition-all",
           viewMode === 'token' && !selectedSector
@@ -33,7 +35,7 @@ const MainView = () => {
         {t('treemap.coins')}
       </button>
       <button
-        onClick={() => goBackToSectors()} // Switch to 'sector' view
+        onClick={() => setViewMode('sector')} // Switch to 'sector' view
         className={clsx(
           "flex items-center px-3 py-1 text-xs font-medium rounded-md transition-all",
           viewMode === 'sector'
@@ -83,25 +85,55 @@ const MainView = () => {
       <div className="flex items-center justify-between px-4 py-2 bg-gray-900 border-b border-gray-800 text-sm h-12 flex-none">
         <div className="flex items-center">
           {/* If we are drilled down into a sector, show breadcrumbs */}
-          {viewMode === 'token' && selectedSector ? (
-            <>
-              <button 
-                onClick={goBackToSectors}
-                className="flex items-center text-gray-400 hover:text-white transition-colors"
-              >
-                <Home size={14} className="mr-1" />
-                {t('treemap.all_sectors')}
-              </button>
-              <ChevronRight size={14} className="mx-2 text-gray-600" />
-              <span className="text-white font-bold">{selectedSector}</span>
-            </>
-          ) : (
-            /* If at root level (Coins or Sectors), show Switcher */
-            <div className="flex items-center">
+          {/* Breadcrumbs */}
+          <div className="flex items-center">
+            <button
+              onClick={() => {
+                setEcosystemFilter('all');
+                setViewMode('token'); // Default to token view when going to root
+              }}
+              className={clsx(
+                "flex items-center transition-colors",
+                ecosystemFilter === 'all' && !selectedSector ? "text-white font-bold" : "text-gray-400 hover:text-white"
+              )}
+            >
+              <Home size={14} className="mr-1" />
+              All
+            </button>
+
+            {ecosystemFilter !== 'all' && (
+              <>
+                <ChevronRight size={14} className="mx-2 text-gray-600" />
+                <button
+                  onClick={() => {
+                    // If we are in a sector, go back to ecosystem root (which might be sector view or token view)
+                    // Let's default to clearing sector selection but keeping ecosystem
+                    goBackToSectors();
+                  }}
+                  className={clsx(
+                    "capitalize transition-colors",
+                    !selectedSector ? "text-white font-bold" : "text-gray-400 hover:text-white"
+                  )}
+                >
+                  {ecosystemFilter}
+                </button>
+              </>
+            )}
+
+            {selectedSector && (
+              <>
+                <ChevronRight size={14} className="mx-2 text-gray-600" />
+                <span className="text-white font-bold">{selectedSector}</span>
+              </>
+            )}
+          </div>
+
+          {/* Controls (Group By & View Mode) - Only show if NOT drilled down into a sector */}
+          {!selectedSector && (
+            <div className="flex items-center ml-auto">
               <span className="text-gray-400 mr-2">{t('treemap.group_by')}</span>
               <GroupBySwitcher />
               
-              {/* View Mode Switcher */}
               <div className="w-px h-4 bg-gray-700 mx-4"></div>
               <ViewModeSwitcher />
             </div>
