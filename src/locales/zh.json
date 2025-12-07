@@ -20,6 +20,17 @@
     "sectors": "赛道",
     "all_sectors": "所有赛道"
   },
+  "view_mode": {
+    "treemap": "热力图",
+    "list": "列表"
+  },
+  "table": {
+    "coin": "代币",
+    "price": "价格",
+    "market_cap": "市值",
+    "volume": "成交量",
+    "last_7d": "7日趋势"
+  },
   "leaderboard": {
     "gainers": "涨幅榜",
     "losers": "跌幅榜",

@@ -35,6 +35,8 @@ export const fetchGlobalData = async () => {
 export const fetchMarketData = async (currency = 'USD', limit = 100) => {
   // Using CoinGecko for better 7D change data
   try {
+    throw new Error('Force fallback to CryptoCompare'); // Temporary force fallback
+    console.log('[API] Fetching market data from CoinGecko...');
     const response = await axios.get('https://api.coingecko.com/api/v3/coins/markets', {
       params: {
         vs_currency: currency.toLowerCase(),
@@ -45,8 +47,10 @@ export const fetchMarketData = async (currency = 'USD', limit = 100) => {
         price_change_percentage: '1h,24h,7d'
       },
     });
+    console.log('[API] CoinGecko success:', response.data?.length);
     return response.data;
   } catch (error) {
+    console.error('[API] CoinGecko failed:', error.message);
     console.warn('CoinGecko fetch failed, falling back to CryptoCompare', error);
     // Fallback to CryptoCompare
     const response = await api.get('/top/mktcapfull', {

@@ -5,7 +5,6 @@ import HoverCard from './HoverCard';
 import { useMarketData } from '../../hooks/useMarketData';
 import { getCoinCategory, getCoinEcosystems } from '../../lib/utils';
 import { useAppStore } from '../../store/useAppStore';
-import { ChevronRight, Home, Grid, Layers } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useTranslation } from 'react-i18next';
 
@@ -17,8 +16,6 @@ const TreemapContainer = () => {
     viewMode,
     selectedSector,
     enterSector,
-    goBackToSectors,
-    enterEcosystemView,
     selectToken,
     pinnedTokenId,
     setPinnedTokenId
@@ -206,67 +203,11 @@ const TreemapContainer = () => {
     };
   }, [pinnedTokenId, setPinnedTokenId]);
 
-  // Group By Switcher Component
-  const GroupBySwitcher = () => (
-    <div className="flex bg-gray-800 rounded-lg p-0.5 ml-4">
-      <button
-        onClick={() => enterEcosystemView()} // Switch to 'token' view (Coins)
-        className={clsx(
-          "flex items-center px-3 py-1 text-xs font-medium rounded-md transition-all",
-          viewMode === 'token' && !selectedSector // Active if token view and no specific sector selected (root token view)
-            ? "bg-gray-700 text-white shadow-sm"
-            : "text-gray-400 hover:text-gray-200"
-        )}
-      >
-        <Grid size={12} className="mr-1.5" />
-        {t('treemap.coins')}
-      </button>
-      <button
-        onClick={() => goBackToSectors()} // Switch to 'sector' view
-        className={clsx(
-          "flex items-center px-3 py-1 text-xs font-medium rounded-md transition-all",
-          viewMode === 'sector'
-            ? "bg-gray-700 text-white shadow-sm"
-            : "text-gray-400 hover:text-gray-200"
-        )}
-      >
-        <Layers size={12} className="mr-1.5" />
-        {t('treemap.sectors')}
-      </button>
-    </div>
-  );
-
   return (
-    <div className="w-full h-full flex flex-col bg-gray-950 rounded-lg overflow-hidden border border-gray-800">
-      {/* Header / Breadcrumbs */}
-      <div className="flex items-center justify-between px-4 py-2 bg-gray-900 border-b border-gray-800 text-sm h-12">
-        <div className="flex items-center">
-          {/* If we are drilled down into a sector, show breadcrumbs */}
-          {viewMode === 'token' && selectedSector ? (
-            <>
-              <button 
-                onClick={goBackToSectors}
-                className="flex items-center text-gray-400 hover:text-white transition-colors"
-              >
-                <Home size={14} className="mr-1" />
-                {t('treemap.all_sectors')}
-              </button>
-              <ChevronRight size={14} className="mx-2 text-gray-600" />
-              <span className="text-white font-bold">{selectedSector}</span>
-            </>
-          ) : (
-            /* If at root level (Coins or Sectors), show Switcher */
-            <div className="flex items-center">
-              <span className="text-gray-400 mr-2">{t('treemap.group_by')}</span>
-              <GroupBySwitcher />
-            </div>
-          )}
-        </div>
-      </div>
-
+    <div className="w-full h-full flex flex-col bg-gray-950 rounded-lg overflow-hidden border border-gray-800 border-t-0 rounded-t-none">
       {/* Treemap Area */}
-      <div 
-        className="flex-1 relative overflow-hidden" 
+      <div
+        className="flex-1 relative overflow-hidden"
         ref={containerRef}
         onMouseMove={handleNodeMouseMove}
       >

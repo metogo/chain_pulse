@@ -20,6 +20,17 @@
     "sectors": "Sectors",
     "all_sectors": "All Sectors"
   },
+  "view_mode": {
+    "treemap": "Treemap",
+    "list": "List"
+  },
+  "table": {
+    "coin": "Coin",
+    "price": "Price",
+    "market_cap": "Market Cap",
+    "volume": "Volume",
+    "last_7d": "Last 7 Days"
+  },
   "leaderboard": {
     "gainers": "Gainers",
     "losers": "Losers",

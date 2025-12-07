@@ -6,7 +6,10 @@ export const useAppStore = create((set) => ({
   sizingMetric: 'market_cap', // 'market_cap', 'volume_24h', 'tvl'
   ecosystemFilter: 'all', // 'all', 'ethereum', 'solana', etc.
   
-  // Drill-Down State
+  // Main View State (Treemap vs List)
+  mainViewMode: localStorage.getItem('mainViewMode') || 'treemap', // 'treemap' or 'list'
+
+  // Drill-Down State (Treemap Internal)
   viewMode: 'token', // 'sector' (L1) or 'token' (L2) - Default to 'token' (Coins)
   selectedSector: null, // e.g., 'Layer 1', 'DeFi'
 
@@ -21,6 +24,10 @@ export const useAppStore = create((set) => ({
   setTimeframe: (newTimeframe) => set({ timeframe: newTimeframe }),
   setSizingMetric: (newMetric) => set({ sizingMetric: newMetric }),
   setEcosystemFilter: (newFilter) => set({ ecosystemFilter: newFilter }),
+  setMainViewMode: (mode) => {
+    localStorage.setItem('mainViewMode', mode);
+    set({ mainViewMode: mode });
+  },
   
   // Drill-Down Actions
   enterSector: (sectorName) => set({ viewMode: 'token', selectedSector: sectorName }),

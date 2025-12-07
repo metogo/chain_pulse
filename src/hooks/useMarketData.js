@@ -19,6 +19,7 @@ const normalizeCoinData = (coin, index) => {
       price_change_percentage_24h: coin.price_change_percentage_24h || 0,
       price_change_percentage_1h_in_currency: coin.price_change_percentage_1h_in_currency || 0,
       price_change_percentage_7d_in_currency: coin.price_change_percentage_7d_in_currency || 0,
+      sparkline_in_7d: coin.sparkline_in_7d || { price: [] },
     };
   } else {
     // CryptoCompare Data (Fallback)
@@ -37,6 +38,7 @@ const normalizeCoinData = (coin, index) => {
       price_change_percentage_24h: raw.CHANGEPCT24HOUR || 0,
       price_change_percentage_1h_in_currency: raw.CHANGEPCTHOUR || 0,
       price_change_percentage_7d_in_currency: 0,
+      sparkline_in_7d: { price: [] }, // Fallback for CryptoCompare
     };
   }
 };

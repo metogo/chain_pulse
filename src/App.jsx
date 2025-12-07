@@ -1,7 +1,8 @@
 import React from 'react';
 import GlobalMarketBar from './features/GlobalMarketBar/GlobalMarketBar';
+import MarketPulseBar from './features/MarketPulseBar/MarketPulseBar';
 import ControlPanel from './features/ControlPanel/ControlPanel';
-import TreemapContainer from './features/treemap/TreemapContainer';
+import MainView from './features/MainView/MainView';
 import Leaderboards from './features/Leaderboards/Leaderboards';
 import TokenDetailPanel from './features/TokenDetailPanel/TokenDetailPanel';
 
@@ -13,6 +14,11 @@ function App() {
         <GlobalMarketBar />
       </div>
 
+      {/* Market Pulse Bar */}
+      <div className="flex-none">
+        <MarketPulseBar />
+      </div>
+
       {/* Main Content Area */}
       <div className="flex flex-1 overflow-hidden min-h-0">
         {/* Left Sidebar: Control Panel */}
@@ -20,9 +26,9 @@ function App() {
           <ControlPanel />
         </div>
 
-        {/* Center: Treemap Visualization */}
+        {/* Center: Main View (Treemap or List) */}
         <main className="flex-1 p-4 relative overflow-hidden h-full min-h-0 min-w-0">
-          <TreemapContainer />
+          <MainView />
         </main>
 
         {/* Right Sidebar: Leaderboards */}

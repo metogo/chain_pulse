@@ -134,3 +134,20 @@ export const getCoinEcosystems = (coinSymbol) => {
 export const getDefiLlamaSlug = (coinSymbol) => {
   return DEFILLAMA_MAPPING[coinSymbol?.toLowerCase()];
 };
+export const generateSparklinePath = (data, width, height) => {
+  if (!data || data.length === 0) return '';
+
+  const min = Math.min(...data);
+  const max = Math.max(...data);
+  const range = max - min;
+  
+  // Avoid division by zero if flat line
+  const scaleY = range === 0 ? 0 : height / range;
+  const stepX = width / (data.length - 1);
+
+  return data.map((val, i) => {
+    const x = i * stepX;
+    const y = height - (val - min) * scaleY;
+    return `${i === 0 ? 'M' : 'L'} ${x},${y}`;
+  }).join(' ');
+};
