@@ -1,6 +1,7 @@
 import React from 'react';
 import { clsx } from 'clsx';
 import { generateSparklinePath } from '../../lib/utils';
+import FlashValue from '../../components/FlashValue';
 
 const AssetSummaryCard = ({ asset, onClick }) => {
   if (!asset) return null;
@@ -23,15 +24,15 @@ const AssetSummaryCard = ({ asset, onClick }) => {
     >
       <div className="flex justify-between items-start z-10">
         <span className="text-xs font-bold text-gray-400">{symbol.toUpperCase()}/USD</span>
-        <span className={clsx("text-xs font-medium", colorClass)}>
+        <FlashValue value={price_change_percentage_24h} className={clsx("text-xs font-medium", colorClass)}>
           {isPositive ? '+' : ''}{price_change_percentage_24h?.toFixed(2)}%
-        </span>
+        </FlashValue>
       </div>
       
       <div className="mt-1 z-10">
-        <span className="text-lg font-bold text-white">
+        <FlashValue value={current_price} className="text-lg font-bold text-white">
           ${current_price?.toLocaleString()}
-        </span>
+        </FlashValue>
       </div>
 
       {/* Sparkline Background */}

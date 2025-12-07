@@ -20,6 +20,9 @@ export const useAppStore = create((set) => ({
   // Hover Card State
   pinnedTokenId: null,
 
+  // Stream State
+  isStreamConnected: false,
+
   // Actions
   setTimeframe: (newTimeframe) => set({ timeframe: newTimeframe }),
   setSizingMetric: (newMetric) => set({ sizingMetric: newMetric }),
@@ -39,4 +42,7 @@ export const useAppStore = create((set) => ({
 
   // Hover Card Actions
   setPinnedTokenId: (tokenId) => set({ pinnedTokenId: tokenId }),
+
+  // Stream Actions
+  setStreamConnected: (isConnected) => set({ isStreamConnected: isConnected }),
 }));

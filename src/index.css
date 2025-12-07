@@ -33,6 +33,13 @@
     --ring: 222.2 84% 4.9%;
 
     --radius: 0.5rem;
+    
+    /* Pulse Engine Colors (v2.2 High Contrast) */
+    --color-positive-flash: #16c784;
+    --color-positive-text: #ffffff;
+    --color-text-normal: #e5e5e5;
+    --color-negative-flash: #ea3943;
+    --color-negative-text: #ffffff;
   }
 
   .dark {
@@ -74,6 +81,7 @@
     @apply bg-background text-foreground;
   }
 }
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
@@ -95,4 +103,47 @@
 
 ::-webkit-scrollbar-corner {
   background: transparent;
+}
+
+/* Pulse Engine Animations (v2.2 High Contrast) */
+
+.price-text {
+  transition: color 0.5s ease-out;
+  /* color: var(--color-text-normal);  Removed to allow inheriting color from parent/context */
+}
+
+/* Up Animation */
+.price-flash-up {
+  animation: flash-up-bg 1s ease-out;
+}
+.price-flash-up .price-text {
+  animation: flash-up-text 1s ease-out;
+}
+
+@keyframes flash-up-bg {
+  from { background-color: var(--color-positive-flash); }
+  to { background-color: transparent; }
+}
+@keyframes flash-up-text {
+  0% { color: var(--color-positive-text); }
+  15% { color: var(--color-text-normal); }
+  100% { color: inherit; } /* Restore to inherited color */
+}
+
+/* Down Animation */
+.price-flash-down {
+  animation: flash-down-bg 1s ease-out;
+}
+.price-flash-down .price-text {
+  animation: flash-down-text 1s ease-out;
+}
+
+@keyframes flash-down-bg {
+  from { background-color: var(--color-negative-flash); }
+  to { background-color: transparent; }
+}
+@keyframes flash-down-text {
+  0% { color: var(--color-negative-text); }
+  15% { color: var(--color-text-normal); }
+  100% { color: inherit; } /* Restore to inherited color */
 }

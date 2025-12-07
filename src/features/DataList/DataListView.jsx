@@ -6,6 +6,7 @@ import { clsx } from 'clsx';
 import { ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react';
 import { generateSparklinePath } from '../../lib/utils';
 import { useNavigate } from 'react-router-dom';
+import FlashValue from '../../components/FlashValue';
 
 const DataListView = () => {
   const { data: marketData, isLoading } = useMarketData();
@@ -119,10 +120,14 @@ const DataListView = () => {
                   </div>
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap text-sm text-white text-right font-mono">
-                  {formatCurrency(coin.current_price)}
+                  <FlashValue value={coin.current_price}>
+                    {formatCurrency(coin.current_price)}
+                  </FlashValue>
                 </td>
                 <td className={clsx("px-4 py-3 whitespace-nowrap text-sm text-right font-medium", isPositive ? "text-green-500" : "text-red-500")}>
-                  {isPositive ? '+' : ''}{coin.price_change_percentage_24h?.toFixed(2)}%
+                  <FlashValue value={coin.price_change_percentage_24h}>
+                    {isPositive ? '+' : ''}{coin.price_change_percentage_24h?.toFixed(2)}%
+                  </FlashValue>
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-300 text-right">
                   {formatLargeNumber(coin.market_cap)}

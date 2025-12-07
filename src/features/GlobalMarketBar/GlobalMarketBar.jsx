@@ -1,10 +1,12 @@
 import React from 'react';
 import { useGlobalData } from '../../hooks/useMarketData';
-import { TrendingUp, TrendingDown, Activity, Zap, Globe } from 'lucide-react';
+import { useAppStore } from '../../store/useAppStore';
+import { TrendingUp, TrendingDown, Activity, Zap, Globe, Wifi, WifiOff } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 const GlobalMarketBar = () => {
   const { data: globalData, isLoading, error } = useGlobalData();
+  const { isStreamConnected } = useAppStore();
   const { t, i18n } = useTranslation();
 
   const toggleLanguage = () => {
@@ -86,6 +88,15 @@ const GlobalMarketBar = () => {
         <Globe size={14} className="mr-1" />
         {i18n.language === 'en' ? 'EN' : '中文'}
       </button>
+
+      {/* Connection Status */}
+      <div className="ml-4 flex items-center" title={isStreamConnected ? "Connected to Pulse Engine" : "Disconnected"}>
+        {isStreamConnected ? (
+          <Wifi size={14} className="text-green-500" />
+        ) : (
+          <WifiOff size={14} className="text-red-500 animate-pulse" />
+        )}
+      </div>
     </div>
   );
 };

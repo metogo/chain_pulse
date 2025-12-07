@@ -6,6 +6,7 @@ import { useCoinDetails, useCoinMarketChart, useFearAndGreedIndex, useMarketData
 import { clsx } from 'clsx';
 import { getCoinCategory, COIN_CATEGORIES } from '../lib/utils';
 import ProfessionalChart from '../features/Chart/ProfessionalChart';
+import FlashValue from '../components/FlashValue';
 
 const FearGreedModule = () => {
   const { data: fng, isLoading } = useFearAndGreedIndex();
@@ -170,10 +171,10 @@ const AssetPage = () => {
            <div className="flex items-start justify-between mb-6">
              <div>
                <div className="flex items-baseline space-x-3 mb-2">
-                 <div className="text-5xl font-bold text-white tracking-tight">
+                 <FlashValue value={tokenDetails?.market_data?.current_price?.usd} className="text-5xl font-bold text-white tracking-tight">
                    {formatCurrency(tokenDetails?.market_data?.current_price?.usd)}
-                 </div>
-                 <select 
+                 </FlashValue>
+                 <select
                    value={currency}
                    onChange={(e) => setCurrency(e.target.value)}
                    className="bg-gray-800 border border-gray-700 text-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-1"
@@ -182,10 +183,10 @@ const AssetPage = () => {
                    <option value="CNY">CNY</option>
                  </select>
                </div>
-               <div className={clsx("flex items-center text-lg font-medium", tokenDetails?.market_data?.price_change_percentage_24h >= 0 ? "text-green-500" : "text-red-500")}>
+               <FlashValue value={tokenDetails?.market_data?.price_change_percentage_24h} className={clsx("flex items-center text-lg font-medium", tokenDetails?.market_data?.price_change_percentage_24h >= 0 ? "text-green-500" : "text-red-500")}>
                  {tokenDetails?.market_data?.price_change_percentage_24h >= 0 ? '+' : ''}
                  {tokenDetails?.market_data?.price_change_percentage_24h?.toFixed(2)}% (24h)
-               </div>
+               </FlashValue>
              </div>
              
              {/* Timeframe Selector */}
